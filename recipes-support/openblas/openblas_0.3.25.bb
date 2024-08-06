@@ -60,9 +60,14 @@ PACKAGECONFIG[dynarch] = ""
 
 PACKAGECONFIG ??= "openmp"
 
+do_compile:prepend:class-native () {
+        export GFORTRAN=/usr/bin/gfortran
+}
+
 do_compile () {
         oe_runmake HOSTCC="${BUILD_CC}"                                         \
                                 CC="${TARGET_PREFIX}gcc ${TOOLCHAIN_OPTIONS} ${@map_extra_options(d.getVar('TARGET_ARCH', True), d)}" \
+                                FC="${GFORTRAN}" \
                                 PREFIX=${exec_prefix} \
                                 CROSS=1 \
                                 CROSS_SUFFIX=${HOST_PREFIX} \
@@ -80,6 +85,7 @@ do_compile () {
 do_install() {
         oe_runmake HOSTCC="${BUILD_CC}"                                         \
                                 CC="${TARGET_PREFIX}gcc ${TOOLCHAIN_OPTIONS}" \
+                                FC="${GFORTRAN}" \
                                 PREFIX=${exec_prefix} \
                                 CROSS=1 \
                                 CROSS_SUFFIX=${HOST_PREFIX} \
@@ -109,3 +115,4 @@ FILES:${PN}-dev = "${includedir} ${libdir}/lib${PN}.a ${libdir}/libblas.a ${libd
 
 DEPENDS:remove:class-native = "libgfortran"
 BBCLASSEXTEND = "native"
+#EXCLUDE_FROM_WORLD:class-native = "1"
